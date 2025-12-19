@@ -1,7 +1,7 @@
-- name: import docker installation
-  ansible.builtin.include_role:
-    name: common
-    tasks_from: main.yaml
+#- name: import docker installation
+#  ansible.builtin.include_role:
+#    name: common
+#    tasks_from: main.yaml
 
 #- name: start a container
 #  community.docker.docker_container:
