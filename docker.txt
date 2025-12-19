@@ -1,0 +1,338 @@
+cgroups allocate and limit resources like memory and CPU, while namespaces provide process and kernel object isolation without imposing resource limits; together they enable fully isolated and resource-controlled containers.
+
+docker is an open source whereas docker enterprise  is paid version
+
+Docker Community Edition (CE) is the free version of Docker, suitable for individual developers and small teams.
+
+Docker Editions
+Edition	                                 Cost	               Target Users
+=============                                                  ===============
+1.Docker Community Edition (CE)	           Free	              Individual developers, small teams, hobby projects
+2.Docker Enterprise /
+Docker Desktop (Pro, Team, Business)	  Paid	              Enterprises, large teams, production environments
+
+
+what is podman?
+Podman is a container engine for running and managing containers and pods
+It is daemonless, meaning there is no central background service like Docker’s dockerd.
+CLI is compatible with Docker commands (podman run vs docker run).
+Focuses on rootless containers, allowing users to run containers without root privileges.
+
+docker vs podman
+-----------------
+Daemon is a central background process (Docker’s dockerd) that manages containers, while daemonless means containers are managed directly by user processes without a central service (Podman).
+
+Docker flow (daemon-based)
+===========================
+[User CLI] → sends commands → [Dockerd daemon] → manages containers
+User CLI: You type commands like docker run, docker ps
+
+Dockerd daemon: Runs as a background root process
+
+Responsible for creating containers, managing networks, storage
+
+Container: The daemon actually starts the container as a process under the kernel
+
+Key point: CLI is just a client → daemon does the work
+
+Podman flow (daemonless)
+=========================
+[User CLI] → directly creates & manages container processes
+User CLI: You type podman run, podman ps
+
+No daemon: CLI directly interacts with the kernel to create containers
+
+Container: Started as a child process of the CLI
+
+Rootless: Can run without root privileges because no central root daemon is needed
+
+
+4️⃣ Analogy
+Docker: CLI = remote control, daemon = engine running in the background, containers = cars
+Podman: CLI = you push and drive the car yourself, containers = cars
+
+* dnf list available | grep docker
+* cat /etc/yum.repos.d/
+* cat redhat-rhui.repo
+* docker --version
+
+
+GHCR is another image registry like Docker Hub, and Docker/Podman can pull images from both.
+ex:
+===
+docker pull ghcr.io/owner/image:tag
+
+
+** The redhat/ubi9 image contains only RHEL user-space software; it does not include hardware or a kernel and relies on the host system for both.
+
+how to launch a container with an image:
+=======================================
+* docker run docker.io/library/nginx
+* docker ps
+* ss -lntp
+* docker inspect "<container-id>"
+
+once container is created , then need to start container
+systemctl start docker, this docker will reload only from root user
+for non user to start docker:
+cat /etc/groups
+sudo usermod -a -G docker ec2-user
+here -a : add
+-G: group
+Adds ec2-user to the docker group
+After this, ec2-user can run Docker commands without sudo
+Existing groups of ec2-user are preserved because of -a
+
+* check id
+* exit and login again
+* check id , ec2-user is a part of docker group
+
+* docker inspect <container-id> | grep -i add
+curl "ip address"
+* ss -lntp, checks docker [nginx]
+* docker ps
+# Map host port 8080 to container port 80
+docker run -d -p 8080:80 nginx
+Host port 8080 → forwards traffic to container port 80
+
+Accessing http://localhost:8080 hits Nginx inside the container
+
+Host port mapping connects external traffic to a container port, which contains the service and its libraries needed to run inside the container.
+
+1️⃣ Client request
+
+When you type an IP address and port in the browser:
+
+http://<host_ip>:32768
+
+
+Your browser sends a network request to the host machine at host port 32768.
+
+2️⃣ Host port role
+
+Host port is a network endpoint on the host
+
+Its job: receive requests from clients and forward them to the appropriate container port
+
+3️⃣ Container port and service
+
+The request is forwarded to the container port (e.g., 80) inside the container
+
+The service inside the container (e.g., Nginx) processes the request
+
+Uses its binaries and libraries inside the container
+
+Returns the response back through the host port to the client
+
+4️⃣ Flow of traffic
+[Browser]
+    |
+    v
+[Host IP:Host Port 32768]  <-- receives request
+    |
+    v
+[Container Port 80]         <-- service listens here
+    |
+    v
+[Nginx inside container]    <-- handles request using its libraries
+    |
+    v
+Response goes back to browser
+
+Host port = entry point for client requests
+
+Container port = where the service listens
+
+Service (Nginx) and libraries = inside container only
+
+Host OS does not run Nginx; it just forwards traffic
+
+
+** docker run nginx:latest
+** docker ps
+** once exit ctrl+c then there is no containers
+docker run -p nginx:latest , to open port
+---- it will not run in detached mode
+docker run -d -p 8080:80 nginx:latest, it will generate one id
+
+-d = detached mode
+
+The container starts in the background
+
+Your terminal is freed immediately; it does not show container logs by default
+docker ps          # List running containers
+docker logs <id>   # View container logs
+docker exec -it <id> /bin/bash  # Enter container shell
+
+Detached mode → Start a service and leave it running in the background (like a server daemon)
+Foreground mode → Start a service and watch its output directly in the terminal
+
+
+
+-----------------------------------------------------------------------------------------------------------------------------------
+1. add docker repo
+sudo dnf -y install dnf-plugins-core
+sudo dnf config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
+2.install docker
+sudo dnf install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+3. start docker
+sudo systemctl start docker
+
+once installation complete
+by default docker runs in root mode, its a central backend service dockerd, so when we run docker in non-root user add that user like ec2-user in docker group
+cat /etc/group
+sudo usermod -a -G  docker ec2-user
+exit or logout the server , re-login
+=================================================================================================================================
+pull images from docker hub
+1. docker pull nginx
+2. docker images
+3. docker create nginx
+4. docker ps -a , creates,exited, except running status only
+5. docker start containerID
+6. docker ps , once we start container
+7. docker inspect "<containerID">, detailed low-level information about Docker objects (containers, images, networks, or volumes).
+8. docker inspect "<containerID>" | grep -i ip
+9. curl "ipaddress"
+===================================================================================================================================
+pull image from docker hub and then pull,create image and run the container in detached mode
+1. docker run -d nginx, here -d is detached mode, without -d once we exit or press ctrl+c container status is in exited mode, to avoid his we process should be in detached mode(background process) once we login and logout there is no issue.
+2. ss -lntp
+3. docker inspect "<containerID>" | grep -i ip
+4. curl "ipaddress"
+
+===================================================================================================================================
+to expose application outside use port
+pull image from docker hub and then pull,create image and run the container in detached mode and open Port
+1. docker run -d -P nginx, here -d is detached mode , -P port
+2. ss -lntp
+3. docker inspect "<containerID>" | grep -i ip
+4. curl "ipaddress"
+5. based on port we expose application outside
+
+=====================================================================================================================================
+to expose application outside use port, to add port custom
+pull image from docker hub and then pull,create image and run the container in detached mode
+1. docker run -d -p 9000:80 nginx, here -d is detached mode
+2. ss -lntp
+3. docker inspect "<containerID>" | grep -i ip
+4. curl "ipaddress"
+5. based on port we expose application outside
+
+here 9000, is a host port[network endpoint ]
+80 is a container port
+once request get from client , host port received and send traffic to container port to run service like nginx,.....
+
+=====================================================================================================================================
+how to remove docker images?
+docker rmi "<imageid>"
+how to remove all docker images at a time?
+docker rmi $(docker images -a -q)
+how to remove containers?
+docker rm "<containerId>"
+docker rm $(docker ps -a -q)
+====================================================================================================================================
+podman:
+=======
+“Podman can run rootless containers as a normal user, no server needed” means:
+You don’t need root privileges.
+There’s no background daemon running.
+You can start containers directly from your user account, safely.
+
+
+===================================================================================
+17-Dec
+------
+* once container is created on top of the image , by default name also created
+* if we provide name explicitly for the container, then
+docker run -d -p 80:80 --name nginx nginx
+docker --help
+docker exec "<container-id>" id
+docker exec "<container-id>" ls -l
+docker exec nginx ls , here nginx is a container name
+ps -ef | grep docker, process in the system
+
+============================================
+chroot jail is:
+
+A directory (anywhere on the host, e.g., /jail, /root/myjail, /home/user/jail)
+
+Prepared with a minimal filesystem (binaries, libraries, config files)
+
+Into which you chroot a process, so the process sees that directory as its new /
+Example
+/root/myjail → sudo chroot /root/myjail /bin/bash
+
+
+* ls / , we can see different directories
+* docker exec nginx ls, we have some directories
+* to run containers inside a path: cd /var/lib/docker/
+* ls
+* find . -name bin -type d
+* docker ps , we can see all the containers inside : cd /var/lib/docker
+* ls
+* cd rootfs
+* ls
+* cd overlays
+* ls
+* ps -ef | grep '2 0' -c
+* ps -ef | grep docker
+
+-------------------------------------------------------------------------------------------------------------
+cgroup:
+=======
+| Feature | Purpose                       | Example usage                                        |
+| ------- | ----------------------------- | ---------------------------------------------------- |
+| chroot  | Filesystem isolation          | Run `/bin/bash` in `/jail` without seeing host files |
+| cgroup  | Resource control & monitoring | Limit memory to 256 MB, CPU to 20% for a process     |
+
+
+==============================================================================================================================
+* docker run docker.io/redhat/ubi9
+* docker run docker.io/redhat/ubi9 ls
+docker.io/redhat/ubi9 , in this image contains:
+What’s included?
+=================
+Userland tools
+Standard Linux utilities needed for basic operation.
+Examples: bash, coreutils (ls, cp, mv), grep, sed, awk, tar, gzip.
+
+Package manager
+===============
+dnf (or yum) for installing additional packages compatible with RHEL 9.
+RHEL 9 libraries
+Standard libraries needed for running software built for RHEL 9.
+Examples: glibc, libstdc++, libuuid, etc.
+Minimal filesystem structure
+Directories like /bin, /usr/bin, /lib, /etc, /var, /tmp.
+Only essential configuration files included.
+
+What’s NOT included?
+====================
+Kernel → Containers use the host’s kernel, so no kernel is inside the image.
+System services → No systemd, sshd, or cron by default.
+Extra software → Only minimal base packages. Additional apps must be installed explicitly.
+
+Typical size:
+=============
+Usually ~200–300 MB, much smaller than a full RHEL installation (~1–2 GB).
+
+Example: running the image
+docker pull docker.io/redhat/ubi9
+docker run -it docker.io/redhat/ubi9 /bin/bash
+
+Inside the container you can check:
+===================================
+# Basic shell and commands
+ls /bin
+dnf install vim       # install extra packages
+cat /etc/os-release   # confirms RHEL 9 environmen
+==================================================================
+* docker run docker.io/redhat/ubi9 env
+* docker run -e url=google.com -e MONGO=true docker.io/redhat/ubi9  env
+
+
+
+
+
+
