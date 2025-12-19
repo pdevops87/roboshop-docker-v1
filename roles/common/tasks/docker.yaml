@@ -8,7 +8,7 @@
     name:
       - dnf-plugins-core
       - docker-ce
-    state: installed
+    state: latest
 
 - name: start  service
   ansible.builtin.systemd_service:
