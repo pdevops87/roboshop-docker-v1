@@ -1,6 +1,6 @@
 - name: docker engine
   hosts: localhost
   connection: local
-  become: yes
+  become: true
   roles:
     - "{{ component }}"
