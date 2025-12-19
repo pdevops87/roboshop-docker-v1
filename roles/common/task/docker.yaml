@@ -1,0 +1,17 @@
+- name: Download component
+  ansible.builtin.get_url:
+    url: https://download.docker.com/linux/rhel/docker-ce.repo
+    dest: docker-ce.repo
+
+- name: install docker
+  ansible.builtin.dnf:
+    name:
+      - dnf-plugins-core
+      - docker-ce
+    state: installed
+
+- name: Enable and start docker service
+  ansible.builtin.systemd_system:
+    name: docker
+    enabled: true
+    state: restarted
