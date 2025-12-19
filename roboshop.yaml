@@ -1,4 +1,4 @@
-- name: docker container
+- name: docker engine
   hosts: all
   become: yes
   roles:
