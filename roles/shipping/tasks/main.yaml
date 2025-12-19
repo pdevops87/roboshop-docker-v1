@@ -5,17 +5,14 @@
 - name: start a container
   community.docker.docker_container:
     name: catalogue
-    image: public.ecr.aws/w8x4g9h7/roboshop-v3/catalogue
+    image: public.ecr.aws/w8x4g9h7/roboshop-v3/shipping
     state: started
     restart: true
     ports:
       - "8000:8080"
     env:
-      MONGO: true
-      MONGO_URL: "mongodb://mongo-ip:27017/catalogue"
-
-
-
+      CART_ENDPOINT: cart-dev.pdevops78.online:8080
+      DB_HOST: mysql-dev.pdevops78.online
 
 
 
