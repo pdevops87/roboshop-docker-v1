@@ -21,11 +21,13 @@
     image: public.ecr.aws/w8x4g9h7/roboshop-v3/schema-load
     state: started
     restart: true
+    ports:
+      - "8000:8080"
     env:
-      DB_TYPE:   "mongo"
-      APP_GIT_URL: "https://github.com/roboshop-devops-project-v3/catalogue"
-      DB_HOST:  "mongodb-dev.pdevops78.online"
-      SCHEMA_FILE: "db/master-data.js"
+      DB_TYPE:         mongo
+      APP_GIT_URL:     https://github.com/roboshop-devops-project-v3/catalogue
+      DB_HOST:         mongodb-dev.pdevops78.online
+      SCHEMA_FILE:     db/master-data.js
 
 
 
