@@ -11,8 +11,26 @@
     ports:
       - "8080:8080"
     env:
-      CART_ENDPOINT: cart-dev.pdevops78.online:8080
-      DB_HOST: mysql-dev.pdevops78.online
+      CART_ENDPOINT: "cart-dev.pdevops78.online:8080"
+      DB_HOST: "mysql-dev.pdevops78.online"
+
+
+- name: Load Schema
+  loop:
+    - app-user.sql
+    - schema.sql
+    - master-data.sql
+  community.docker.docker_container:
+    name: schema-load - {{ item }}
+    image: public.ecr.aws/w8x4g9h7/roboshop-v3/schema-load
+    state: started
+    env:
+      DB_TYPE: "mysql"
+      APP_GIT_URL: "https://github:com/pdevops87/roboshop-devops-project-v3/shipping"
+      DB_HOST: "mysql-ip"
+      DB_USER: "root"
+      DB_PASS: "RoboShop@1"
+      SCHEMA_FILE: "{{ item }}"
 
 
 
