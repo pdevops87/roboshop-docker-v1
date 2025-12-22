@@ -9,7 +9,7 @@
     state: started
     restart: true
     ports:
-      - "8000:8080"
+      - "8080:8080"
     env:
       CART_ENDPOINT: cart-dev.pdevops78.online:8080
       DB_HOST: mysql-dev.pdevops78.online
