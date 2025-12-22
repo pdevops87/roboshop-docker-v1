@@ -20,7 +20,6 @@
     name: schema-load
     image: public.ecr.aws/w8x4g9h7/roboshop-v3/schema-load
     state: started
-    restart: true
     env:
       DB_TYPE: "mongo"
       APP_GIT_URL: "https://github.com/roboshop-devops-project-v3/catalogue"
