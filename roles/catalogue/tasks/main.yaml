@@ -1,5 +1,5 @@
 - name: import docker installation
-  ansible.builtin.import_role:
+  ansible.builtin.include_role:
     name: common
 
 - name: start a container
