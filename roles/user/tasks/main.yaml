@@ -4,7 +4,7 @@
 
 - name: start a container
   community.docker.docker_container:
-    name: catalogue
+    name: user
     image: public.ecr.aws/w8x4g9h7/roboshop-v3/user
     state: started
     restart: true
