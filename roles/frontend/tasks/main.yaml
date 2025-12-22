@@ -13,13 +13,13 @@
     env:
       CATALOGUE_HOST: catalogue-dev.pdevops78.online
       CATALOGUE_PORT: "8080"
-      USER_HOST: user-dev.pdevops78.online
+      USER_HOST: 100.31.148.182
       USER_PORT: "8080"
-      CART_HOST: cart-dev.pdevops78.online
+      CART_HOST: 100.31.148.182
       CART_PORT: "8080"
-      SHIPPING_HOST: shipping-dev.pdevops78.online
+      SHIPPING_HOST: 100.31.148.182
       SHIPPING_PORT: "8080"
-      PAYMENT_HOST: payment-dev.pdevops78.online
+      PAYMENT_HOST: 100.31.148.182
       PAYMENT_PORT: "8080"
 
 
