@@ -9,7 +9,7 @@
     state: started
     restart: true
     ports:
-      - "8000:8080"
+      - "8080:8080"
     env:
       MONGO: "true"
       MONGO_URL: "mongodb://mongodb-dev.pdevops78.online:27017/catalogue"
