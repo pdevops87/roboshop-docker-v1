@@ -13,7 +13,7 @@
     env:
       CATALOGUE_HOST: catalogue-dev.pdevops78.online
       CATALOGUE_PORT: "8080"
-      USER_HOST: 100.31.148.182
+      USER_HOST: user-dev.pdevops78.online
       USER_PORT: "8080"
       CART_HOST: 100.31.148.182
       CART_PORT: "8080"
