@@ -1,6 +1,5 @@
 - name: docker engine
-  hosts: localhost
-  connection: local
+  hosts: all
   become: true
   roles:
     - "{{ component }}"
