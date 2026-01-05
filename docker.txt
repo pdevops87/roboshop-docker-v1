@@ -332,6 +332,16 @@ cat /etc/os-release   # confirms RHEL 9 environmen
 * docker run -e url=google.com -e MONGO=true docker.io/redhat/ubi9  env
 
 
+important point:
+================
+Containers are just processes
+Without a process, there’s nothing to start → container cannot exist
+
+A container must always have a process to run.
+ENTRYPOINT, CMD, or an overridden command provides that process.
+Without it → Docker cannot start the container → container is not created.
+
+
 
 
 
