@@ -6,7 +6,6 @@ if [ "$1" = "install"  ]; then
  sudo systemctl start docker
 fi
 
-
 if [ "$1" = "uninstall" ]; then
    sudo dnf remove -y dnf-plugins-core
    sudo rm -f /etc/yum.repos.d/docker-ce.repo
